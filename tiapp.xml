@@ -13,7 +13,7 @@
     <analytics>true</analytics>
     <guid>b5ec6c04-c6c0-4fb1-b628-f3e6cf80d870</guid>
     <property name="ti.ui.defaultunit" type="string">dp</property>
-    <ios>
+    <ios>   
         <plist>
             <dict>
                 <key>UISupportedInterfaceOrientations~iphone</key>

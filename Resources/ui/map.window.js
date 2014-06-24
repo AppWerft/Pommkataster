@@ -10,7 +10,7 @@ module.exports = function() {
 		enableZoomControls : false,
 		animate : true,
 		regionFit : true,
-		region : {
+		region : {   
 			latitude : 50.1559955,
 			longitude : 8.7657151,
 			animate : true,

@@ -5,8 +5,9 @@ module.exports = function() {
 		backgroundColor : 'white'
 	});
 	var mbtilesDB = Ti.Filesystem.getFile(Ti.Filesystem.getResourcesDirectory(), 'assets', 'enkheim.mbtiles').nativePath;
+	console.log(mbtilesDB);
 	self.mapview = MapNF.createView({
-		mapType : MapNF.STANDARD_TYPE,
+		
 		enableZoomControls : false,
 		animate : true,
 		regionFit : true,

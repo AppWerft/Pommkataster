@@ -3,7 +3,8 @@ module.exports = function() {
 		backgroundColor : 'white'
 	});
 	var leaflet = Ti.UI.createWebView({
-		url : '/leaflet/app.html'
+		url : '/leaflet/app.html',
+		disableBounce : true
 	});
 	self.add(leaflet);
 	return self;

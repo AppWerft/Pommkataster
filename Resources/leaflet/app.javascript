@@ -1,4 +1,5 @@
-var mbt = MBTiles.load('enkheim.mbtiles', function(me) {
+var mbt = MBTiles.load('./enkheim.mbtiles', function(me) {
+	console.log(me);
     var centerVal = me.metadata('center').split(",");
     var boundVal  = me.metadata('bounds').split(",");
     var bounds    = new L.LatLngBounds( new L.LatLng(boundVal[1],boundVal[0]), new L.LatLng(boundVal[3],boundVal[2]) );
@@ -35,7 +36,7 @@ var mbt = MBTiles.load('enkheim.mbtiles', function(me) {
     console.log(me.metadata('minzoom'));
     map.addLayer(MBLayerObj);
     console.log(centerVal);
-    //map.setView(new L.LatLng(parseFloat(centerVal[1]),parseFloat(centerVal[0])),parseInt(centerVal[2]));
+    map.setView(new L.LatLng(parseFloat(centerVal[1]),parseFloat(centerVal[0])),parseInt(centerVal[2]));
     map.fitBounds(bounds);
   }
 );

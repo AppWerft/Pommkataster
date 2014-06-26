@@ -1,4 +1,4 @@
-var mapwindow = require('ui/offmap.window')();
+var mapwindow = require('ui/leaflet.window')();
 var detailNav = Ti.UI.iOS.createNavigationWindow({
 	window : mapwindow
 });
@@ -6,6 +6,8 @@ var detailNav = Ti.UI.iOS.createNavigationWindow({
 var master = Ti.UI.createWindow({
 	backgroundColor : 'gray'
 });
+
+
 var label2 = Ti.UI.createLabel({
 	text : 'Master View'
 });

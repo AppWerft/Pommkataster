@@ -8,9 +8,9 @@
     <description>not specified</description>
     <copyright>2014 by rainerschleevoigt</copyright>
     <icon>appicon.png</icon>
-    <fullscreen>false</fullscreen>
-    <navbar-hidden>false</navbar-hidden>
-    <analytics>true</analytics>
+    <fullscreen>true</fullscreen>
+    <navbar-hidden>true</navbar-hidden>
+    <analytics>false</analytics>
     <guid>b5ec6c04-c6c0-4fb1-b628-f3e6cf80d870</guid>
     <property name="ti.ui.defaultunit" type="string">dp</property>
     <ios>

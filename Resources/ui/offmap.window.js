@@ -4,7 +4,7 @@ module.exports = function() {
 		backgroundColor : 'white'
 	});
 	self.mapview = Map.createView({
-		//regionFit : true,
+		//regionFit : true,   
 		location : {
 			latitude : 50.156,
 			longitude : 8.7657,

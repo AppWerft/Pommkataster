@@ -16,7 +16,7 @@
     <ios>
         <plist>
             <dict>
-                <key>UISupportedInterfaceOrientations~iphone</key>
+                <key>UISupportedInterfaceOrientations~iphone</key>mnmmnbvvvvvvvvvvvvvvvcvvvvv
                 <array>
                     <string>UIInterfaceOrientationPortrait</string>
                 </array>
@@ -47,11 +47,7 @@
         </splash>
         <theme>default</theme>
     </mobileweb>
-    <modules>
-        <module platform="iphone" version="2.0.0.nf">ti.map</module>
-        <module platform="android" version="2.1.2.nf">ti.map</module>
-        <module platform="iphone">com.appmodulator.offline</module>
-    </modules>
+    <modules/>
     <deployment-targets>
         <target device="android">false</target>
         <target device="blackberry">false</target>
@@ -60,5 +56,5 @@
         <target device="mobileweb">false</target>
         <target device="tizen">false</target>
     </deployment-targets>
-    <sdk-version>3.2.3.GA</sdk-version>
+    <sdk-version>3.4.0.v20140605150746</sdk-version>
 </ti:app>

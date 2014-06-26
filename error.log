@@ -1,0 +1,16 @@
+[DEBUG] :  [METHODSDEMO] demoMethodFile received 1 argument of type NSString
+[DEBUG] :  [METHODSDEMO] Path: /Users/rainerschleevoigt/Library/Application Support/iPhone Simulator/7.1/Applications/E0142292-B771-48C8-A6D9-DDF8CD4DCE33/Pommkataster.app/assets/enkheim.mbtiles  Size: 19779584
+[DEBUG] :  path passed for tileDB is /Users/rainerschleevoigt/Library/Application Support/iPhone Simulator/7.1/Applications/E0142292-B771-48C8-A6D9-DDF8CD4DCE33/Pommkataster.app/assets/enkheim.mbtiles
+[DEBUG] :  c url: (null)
+[DEBUG] :  file exists at path? 0
+[DEBUG] :  Application booted in 466.356993 ms
+[DEBUG] :  tiledbpath is file:///Users/rainerschleevoigt/Library/Application%20Support/iPhone%20Simulator/7.1/Applications/E0142292-B771-48C8-A6D9-DDF8CD4DCE33/Pommkataster.app/assets/enkheim.mbtiles
+[DEBUG] :  sdr database file exists at path? 1
+[DEBUG] :  2014-06-25 10:33:15.303 Pommkataster[14615:70b] value from opening sqldb is 0
+[DEBUG] :  2014-06-25 10:33:15.317 Pommkataster[14615:70b] Tiler overlay view has been initialized
+[DEBUG] :  2014-06-25 10:33:15.983 Pommkataster[14615:2903] zoomscale is 0.125000
+[DEBUG] :  2014-06-25 10:33:15.984 Pommkataster[14615:2903] determined tile for coordinates (lat,lon,zoom) 50.156666,8.760223,6 to have indexes 33.557373,42.338135
+[DEBUG] :  2014-06-25 10:33:15.985 Pommkataster[14615:2903] id for tile query is SELECT tile_id FROM map WHERE zoom_level=6 and tile_column=33 and tile_row=42
+[DEBUG] :  2014-06-25 10:33:15.986 Pommkataster[14615:2903] query creation ret val is 1
+[DEBUG] :  2014-06-25 10:33:15.986 Pommkataster[14615:2903] Error: tile ID is nil, cannot retrieve image for tile because tile ID passed is nil
+[DE

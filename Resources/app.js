@@ -1,4 +1,4 @@
-var mapwindow = require('ui/map.window')();
+var mapwindow = require('ui/offmap.window')();
 var detailNav = Ti.UI.iOS.createNavigationWindow({
 	window : mapwindow
 });
@@ -31,3 +31,5 @@ splitWin.addEventListener('visible', function(e) {
 });
 
 splitWin.open(); 
+
+//require('importer')();

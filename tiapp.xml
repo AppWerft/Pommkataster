@@ -4,7 +4,7 @@
     <name>Pommkataster</name>
     <version>1.0</version>
     <publisher>rainerschleevoigt</publisher>
-    <url>http://</url> 
+    <url>http://</url>
     <description>not specified</description>
     <copyright>2014 by rainerschleevoigt</copyright>
     <icon>appicon.png</icon>
@@ -13,7 +13,7 @@
     <analytics>true</analytics>
     <guid>b5ec6c04-c6c0-4fb1-b628-f3e6cf80d870</guid>
     <property name="ti.ui.defaultunit" type="string">dp</property>
-    <ios>   
+    <ios>
         <plist>
             <dict>
                 <key>UISupportedInterfaceOrientations~iphone</key>
@@ -50,6 +50,7 @@
     <modules>
         <module platform="iphone" version="2.0.0.nf">ti.map</module>
         <module platform="android" version="2.1.2.nf">ti.map</module>
+        <module platform="iphone">com.appmodulator.offline</module>
     </modules>
     <deployment-targets>
         <target device="android">false</target>

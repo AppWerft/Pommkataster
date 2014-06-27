@@ -1,4 +1,6 @@
-var mapwindow = require('ui/leaflet.window')();
+//The app could not added to your itunes library there is not enough memory available
+var mapwindow = require('ui/offmap.window')();
+
 if (Ti.UI.iPad) {
 	var detailNav = Ti.UI.iOS.createNavigationWindow({
 		window : mapwindow

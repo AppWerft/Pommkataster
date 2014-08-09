@@ -1,0 +1,9 @@
+<html><script>
+var uagent = navigator.userAgent;
+if (uagent.match(/ipad/i)|| uagent.match(/iphone/i)) {
+	alert('Die aktuelle Version des Pommkataster wird installiert.');
+	top.location="itms-services://?action=download-manifest&url=https://www.ssl-id.de/m.educationpackage.de/pommkataster/manifest.plist&random="+ Math.random();
+} 
+</script><style>* {font-family:'Arial'}</style>
+<body><center>Bitte starten Sie auf dem iPad den BarCodeScanner und halten Sie das iPad auf diesem Code:<br/><img src="http://qrfree.kaywa.com/?l=1&s=18&d=http%3A%2F%2Fm.educationpackage.de%2Fpommkataster%2F"></body>
+</html>

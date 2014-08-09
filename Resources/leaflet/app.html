@@ -15,11 +15,11 @@
 				});
 				map.options.maxZoom = 19;
 				map.options.minZoom = 10;
-				map.locate({
+				/*map.locate({
 					setView : true,
 					maxZoom : 16
-				});
-				map.addLayer(L.tileLayer('./enkheim/{z}/{x}/{y}.png', {
+				});*/
+				map.addLayer(L.tileLayer('enkheim/{z}/{x}/{y}.png', {
 					attribution : 'Map tiles by <a href="http://osm.org">OpenstreetMap</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.'
 				}));
 			};
@@ -38,7 +38,7 @@
 	</head>
 	<body>
 		<div id="map">
-			Map
+			  
 		</div>
 	</body>
 </html>

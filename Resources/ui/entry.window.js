@@ -1,8 +1,8 @@
-module.exports = function() {
+module.exports = function(baum) {
 	var self = Ti.UI.createView({
 		backgroundColor : '#ccffcc',
 		title : 'Baum-Datensatz',
-		width : 300,
+		width : 240,
 		left : -300,
 		bottom : 20,
 		top : 20
@@ -12,13 +12,13 @@ module.exports = function() {
 		height : 50
 	});
 	self.add(navi);
-	var tree = {};
+
 	self.savebutton = Ti.UI.createButton({
 		title : 'Speichern',
 		right : 10
 	});
 	self.cancelbutton = Ti.UI.createButton({
-		title:'Abbrechen',
+		title : 'Abbrechen',
 		left : 10
 	});
 	navi.add(self.savebutton);
@@ -26,6 +26,7 @@ module.exports = function() {
 	var pommesdata = require('model/pommes');
 	var pommes = [];
 	var data = [];
+	pommes[0] = 'unbekannte Obstsorte';
 	for (var i = 0; i < pommesdata.length; i++) {
 		pommes.push(pommesdata[i].div[0].a.title);
 	}
@@ -41,9 +42,10 @@ module.exports = function() {
 	picker.add(data);
 	picker.selectionIndicator = true;
 	picker.addEventListener('change', function(_e) {
-		console.log(_e.selectedValue[0]);
-		tree.sorte = _e.selectedValue[0];
-		Ti.App.fireEvent('app:tree', tree);
+		baum.sorte = _e.selectedValue[0];
+		Ti.App.fireEvent('app:tree', {
+			sorte : _e.selectedValue[0]
+		});
 	});
 	self.add(picker);
 	var container = Ti.UI.createScrollView({
@@ -84,10 +86,9 @@ module.exports = function() {
 		}
 	};
 	for (var key in textinputs) {
-		textinputs[key].view = new (require('ui/textfield.widget'))({
+		textinputs[key].view = new (require('ui/textfield.widget'))(baum, {
 			key : key,
 			label : textinputs[key].label,
-
 		});
 		container.add(textinputs[key].view);
 	}

@@ -159,24 +159,6 @@ Apiomat.Baum.prototype.getModuleName = function() {
 
 /* easy getter and setter */
 
-        Apiomat.Baum.prototype.getBaumumfang = function() 
-{
-    return this.data.baumumfang;
-};
-
-Apiomat.Baum.prototype.setBaumumfang = function(_baumumfang) {
-    this.data.baumumfang = _baumumfang;
-};
-
-        Apiomat.Baum.prototype.getPflegezustand = function() 
-{
-    return this.data.pflegezustand;
-};
-
-Apiomat.Baum.prototype.setPflegezustand = function(_pflegezustand) {
-    this.data.pflegezustand = _pflegezustand;
-};
-
    Apiomat.Baum.prototype.getPositionLatitude = function() 
 {
     var locArr = this.data.position;
@@ -223,6 +205,24 @@ Apiomat.Baum.prototype.setPositionLongitude = function(_longitude)
     this.data.position = locArr;
 };
 
+        Apiomat.Baum.prototype.getPflegezustand = function() 
+{
+    return this.data.pflegezustand;
+};
+
+Apiomat.Baum.prototype.setPflegezustand = function(_pflegezustand) {
+    this.data.pflegezustand = _pflegezustand;
+};
+
+        Apiomat.Baum.prototype.getBaumumfang = function() 
+{
+    return this.data.baumumfang;
+};
+
+Apiomat.Baum.prototype.setBaumumfang = function(_baumumfang) {
+    this.data.baumumfang = _baumumfang;
+};
+
         Apiomat.Baum.prototype.getPhoto = function() 
 {
     return this.data.photo;
@@ -239,6 +239,15 @@ Apiomat.Baum.prototype.setPhoto = function(_photo) {
 
 Apiomat.Baum.prototype.setArbeitstitel = function(_arbeitstitel) {
     this.data.arbeitstitel = _arbeitstitel;
+};
+
+        Apiomat.Baum.prototype.getFlurstueck = function() 
+{
+    return this.data.flurstueck;
+};
+
+Apiomat.Baum.prototype.setFlurstueck = function(_flurstueck) {
+    this.data.flurstueck = _flurstueck;
 };
 
         Apiomat.Baum.prototype.getBaumplakettennummer = function() 

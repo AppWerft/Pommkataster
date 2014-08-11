@@ -1,8 +1,4 @@
-//The app could not added to your itunes library there is not enough memory available
-
-var MapNavWindow = Ti.UI.iOS.createNavigationWindow({
-	window : require('ui/map.window')()
-});
-//require('controls/converter')();
-
-MapNavWindow.open();
+! function() {
+	Ti.App.Apiomat = new (require('controls/apiomat.adapter'))();
+	require('ui/main')();
+}();

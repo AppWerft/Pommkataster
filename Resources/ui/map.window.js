@@ -4,100 +4,31 @@ module.exports = function() {
 	var baum = {
 		sorte : ''
 	};
-	var button = Ti.UI.createButton({
-		title : 'Baum hinzufügen',
-		image : 'assets/tree.png'
-	});
 	var self = Ti.UI.createWindow({
 		backgroundColor : 'white',
 		fullscreen : true,
-		leftNavButton : button,
-		fullscreen : true,
-		title : 'Streuobst-Karte',
-		navBarHidden : false
+		title : 'Streuobst-Karte #' + Ti.App.Properties.getString('pid', '')
 	});
-	var popup = require('ui/entry.window')(baum);
+	self.popupbutton = Ti.UI.createButton({
+		width : 26,
+		height : 30,
+		backgroundImage : 'assets/tree.png'
+	});
+	self.leftNavButton = self.popupbutton;
 
-	popup.cancelbutton.addEventListener('click', function() {
-		self.leftNavButton = button;
-		popup.animate({
-			left : -300
-		}, function() {
-			if (self.mapview.activepin) {
-				self.mapview.removeAnnotation(self.mapview.activepin);
-				self.mapview.activepin = null;
-			}
-			self.remove(popup);
-		});
-	});
-	popup.savebutton.addEventListener('click', function() {
-		Ti.App.Apiomat.saveBaum(baum);
-		self.leftNavButton = button;
-		popup.animate({
-			left : -300,
-			duration : 700
-		}, function() {
-			if (self.mapview.activepin) {
-				self.mapview.deselectAnnotation(self.mapview.activepin);
-				self.mapview.removeAnnotation(self.mapview.activepin);
-				//	self.mapview.setImage('/assets/tree.png');
-				self.mapview.activepin.setDraggable(false);
-				self.mapview.addAnnotation(self.mapview.activepin);
-			}
-			self.remove(popup);
-		});
-	});
-	button.addEventListener('click', function() {
+	self.popupbutton.addEventListener('click', function() {
+		self.mapview.popup = require('ui/entry.window')(self, baum);
 		self.leftNavButton = null;
-		self.add(popup);
-		popup.animate({
+		self.add(self.mapview.popup);
+		self.mapview.popup.animate({
 			left : 0
 		});
-		Ti.Geolocation.purpose = 'Apfelbaumstandort bestimmen';
-		Ti.Geolocation.getCurrentPosition(function(e) {
-			if (e.success) {
-				self.mapview.activepin = Map.createAnnotation({
-					latitude : e.coords.latitude,
-					draggable : true,
-					longitude : e.coords.longitude,
-					title : 'Apfelbaum',
-					subtitle : '#',
-					pincolor : Map.ANNOTATION_GREEN
-					//	image : '/assets/tree.png',
-				});
-				baum.latitude = parseFloat(e.coords.latitude);
-				baum.longitude = parseFloat(e.coords.longitude);
-
-				self.mapview.activepin.addEventListener('pinchangedragstate', function(_e) {
-					baum.latitude = parseFloat(_e.annotation.latitude);
-					baum.longitude = parseFloat(_e.annotation.longitude);
-				});
-				self.mapview.setLocation({
-					latitude : e.coords.latitude,
-					longitude : e.coords.longitude,
-					latitudeDelta : 0.002,
-					longitudeDelta : 0.002,
-					animate : true
-				});
-				self.mapview.addAnnotation(self.mapview.activepin);
-				Ti.App.addEventListener('app:tree', function(_e) {
-					console.log(_e);
-					_e.sorte && self.mapview.activepin.setTitle(_e.sorte);
-					_e.arbeitstitel && self.mapview.activepin.setSubtitle(_e.arbeitstitel);
-					if (_e.remove == true) {
-						self.mapview.removeAnnotation(self.mapview.activepin);
-						self.mapview.activepin = null;
-					}
-
-				});
-				self.mapview.selectAnnotation(self.mapview.activepin);
-
-			}
-		});
+		self.mapview.activepin = require('ui/activeannotation.widget')(self.mapview, baum, true);
 	});
 
 	self.mapview = Map.createView({
 		mapType : Map.HYBRID_TYPE,
+		popup : null,
 		region : {
 			latitude : 50.1559955,
 			longitude : 8.7657151,
@@ -137,9 +68,23 @@ module.exports = function() {
 			self.mapview.addAnnotations(annotations);
 		});
 		self.mapview.addEventListener('click', function(_e) {
-			if (_e.clicksource != 'pin') {
+			console.log(_e.clicksource);
+			if (!self.mapview.popup && _e.annotation && _e.clicksource == 'pin') {
 				baum = _e.annotation.itemId;
-				alert(_e.annotation.itemId);
+
+				self.mapview.popup = require('ui/entry.window')(self, baum);
+				self.leftNavButton = null;
+				self.add(self.mapview.popup);
+				Ti.App.addEventListener('app:tree', function(_payload) {
+					if (_payload.itemId)
+						_e.annotation.itemId = _payload.itemId;
+					_payload.sorte && _e.annotation.setTitle(_payload.sorte);
+
+					_payload.arbeitstitel && _e.annotation.setSubtitle(_payload.arbeitstitel);
+				});
+				self.mapview.popup.animate({
+					left : 0
+				});
 			}
 		});
 

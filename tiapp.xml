@@ -16,11 +16,14 @@
     <ios>
         <plist>
             <dict>
+            	<key>UIFileSharingEnabled</key><true/>
+            	
+            	
                 <key>UISupportedInterfaceOrientations~iphone</key>
-                <array>
-                    <string>UIInterfaceOrientationPortrait</string>
-                </array>
-                <key>UISupportedInterfaceOrientations~ipad</key>
+               <array>
+                    <string>UIInterfaceOrientationLandscapeLeft</string>
+                    <string>UIInterfaceOrientationLandscapeRight</string>
+                </array> <key>UISupportedInterfaceOrientations~ipad</key>
                 <array>
                     <string>UIInterfaceOrientationLandscapeLeft</string>
                     <string>UIInterfaceOrientationLandscapeRight</string>

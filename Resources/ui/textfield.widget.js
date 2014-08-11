@@ -2,6 +2,7 @@ module.exports = function() {
 	var baum = arguments[0];
 	var options = arguments[1] || {};
 	var key = options.key;
+	console.log(options.keyboardtype);
 	var self = Ti.UI.createView({
 		top : 10,
 		height : Ti.UI.SIZE,
@@ -12,6 +13,7 @@ module.exports = function() {
 		left : 10,
 		height : 40,
 		top : 0,
+		value : baum[key] || '',
 		keyboardType : (options.keyboardtype) ? (options.keyboardtype) : Ti.UI.KEYBOARD_DECIMAL,
 		borderStyle : Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
 		hintText : '???'

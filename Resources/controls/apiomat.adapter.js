@@ -16,17 +16,14 @@ var ApiomatAdapter = function() {
 	var callbacks = arguments[0] || {};
 	this.userid = Ti.Utils.md5HexDigest(Ti.Platform.getMacaddress()).substring(0, 7);
 	this.user = {};
-	this.loginUser();
-
-	return this;
 	// test if online:
-
 	var xhr = Ti.Network.createHTTPClient({
 		onload : callbacks.ononline,
 		onerror : callbacks.onoffline
 	});
 	xhr.open('HEAD', 'https://apiomat.org/yambas/rest');
 	xhr.send();
+	return this;
 };
 
 ApiomatAdapter.prototype.loginUser = function() {
@@ -63,11 +60,10 @@ ApiomatAdapter.prototype.loginUser = function() {
 };
 
 ApiomatAdapter.prototype.saveBaum = function(baum) {
-	var Baum = new Apiomat.Baum();
+	var Baum = (baum.id) ? this.trees[baum.id] : new Apiomat.Baum();
 	console.log('~~~~~~~~~~~~~~~');
 	console.log(baum);
 	for (var key in baum) {
-		console.log(key);
 		switch (key) {
 		case 'sorte':
 			Baum.setSorte(baum.sorte);
@@ -94,6 +90,7 @@ ApiomatAdapter.prototype.saveBaum = function(baum) {
 			Baum.setBaumplakettennummer(baum.baumplakettennummer);
 		}
 	}
+	Baum.setProjektnummer = Ti.App.Properties.getString('pid');
 	Baum.save({
 		onOk : function() {
 			console.log('Info: new position (from alarm process) successful saved ');
@@ -105,36 +102,53 @@ ApiomatAdapter.prototype.saveBaum = function(baum) {
 	});
 };
 
-ApiomatAdapter.prototype.setPosition = function(args) {
-	var that = this;
-	var myNewPosition = new Apiomat.Position();
-	myNewPosition.setPositionLatitude(args.latitude);
-	myNewPosition.setPositionLongitude(args.longitude);
-	myNewPosition.setDevice(Ti.Platform.model);
-	myNewPosition.setUserid(that.userid);
-	myNewPosition.setApi(Ti.Platform.Android.API_LEVEL);
-	myNewPosition.setVersion(Ti.App.version);
-	myNewPosition.setEnabled(args.enabled);
-	myNewPosition.save({
-		onOk : function() {
-			console.log('Info: new position (from alarm process) successful saved ' + myNewPosition);
+Apiomat.prototype.getGeoJSON = function() {
+	var geojson = {
+		"type" : "FeatureCollection",
+		"features" : []
+	};
+	for (var i = 0; i < this.trees.length; i++) {
+		var tree = this.trees[i];
+		geojson.features.push({
+			type : "Feature",
+			properties : {
+				sorte : tree.sorte
+			},
+			geometry : {
+				type : "Point",
+				coordinates : [tree.latitude, tree.longitude]
+			}
+		});
+	}
+	var file = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, 'geo.json');
+	file.write(JSON.stringify(geojson));
+	var xhr = Ti.Network.createHTTPClient({
+		onload : function() {
+			var shapefile = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, 'geo_shape.zip');
+			file.write(this.responseData);
 		},
-		onError : function() {
-			console.log('Error: cannot save new position (from alarm process) ' + E);
-
+		onerror : function() {
+			console.log(this.error);
 		}
 	});
-
+	xhr.open('POST', 'http://ogre.adc4gis.com/convertJson');
+	xhr.send({
+		json : JSON.stringify(geojson)
+	});
 };
+
 ApiomatAdapter.prototype.getAllTrees = function(_options, _callback) {
-	var query = "";
+	var query = "projektnummer==\"" + Ti.App.Properties.getString('pid') + "\"";
+	var that = this;
 	Apiomat.Baum.getBaums(query, {
 		onOk : function(_trees) {
+			that.trees = _trees;
 			var treelist = {};
 			for (var i = 0; i < _trees.length; i++) {
 				try {
 					var id = _trees[i].getID();
 					treelist[id] = {
+						id : id,
 						latitude : _trees[i].getPositionLatitude(),
 						longitude : _trees[i].getPositionLongitude(),
 						sorte : _trees[i].getSorte(),
@@ -150,10 +164,10 @@ ApiomatAdapter.prototype.getAllTrees = function(_options, _callback) {
 				}
 				_callback(treelist);
 			}
-			
+
 		}
 	});
-
+	this.getGeoJSON();
 };
 
 ApiomatAdapter.prototype.saveTree = function(_args, _callbacks) {

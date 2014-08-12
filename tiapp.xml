@@ -16,14 +16,14 @@
     <ios>
         <plist>
             <dict>
-            	<key>UIFileSharingEnabled</key><true/>
-            	
-            	
+                <key>UIFileSharingEnabled</key>
+                <true/>
                 <key>UISupportedInterfaceOrientations~iphone</key>
-               <array>
+                <array>
                     <string>UIInterfaceOrientationLandscapeLeft</string>
                     <string>UIInterfaceOrientationLandscapeRight</string>
-                </array> <key>UISupportedInterfaceOrientations~ipad</key>
+                </array>
+                <key>UISupportedInterfaceOrientations~ipad</key>
                 <array>
                     <string>UIInterfaceOrientationLandscapeLeft</string>
                     <string>UIInterfaceOrientationLandscapeRight</string>
@@ -42,7 +42,7 @@
     <android xmlns:android="http://schemas.android.com/apk/res/android"/>
     <modules>
         <module platform="iphone">com.appmodulator.offline</module>
-        <module platform="iphone" version="2.0.0.nf">ti.map</module>
+        <module platform="iphone" version="2.0.2">ti.map</module>
         <module platform="android">ti.map</module>
     </modules>
     <deployment-targets>

@@ -68,10 +68,9 @@ module.exports = function() {
 			self.mapview.addAnnotations(annotations);
 		});
 		self.mapview.addEventListener('click', function(_e) {
-			console.log(_e.clicksource);
-			if (!self.mapview.popup && _e.annotation && _e.clicksource == 'pin') {
+			console.log('Info: clicksource='+_e.clicksource);
+			if (!self.mapview.popup && _e.annotation && _e.clicksource == 'leftButton') {
 				baum = _e.annotation.itemId;
-
 				self.mapview.popup = require('ui/entry.window')(self, baum);
 				self.leftNavButton = null;
 				self.add(self.mapview.popup);
@@ -85,9 +84,20 @@ module.exports = function() {
 				self.mapview.popup.animate({
 					left : 0
 				});
+				var logo = Ti.UI.createImageView({
+					top : 0,
+					right : 0,
+					width : 100,
+					height : 120,
+					image : 'assets/logo.png',
+					opacity : 0.6,
+					touchEnabled : false
+				});
+				self.mapview.add(logo);
+			} else {
+				console.log('Warning: map always actives');
 			}
 		});
-
 	}, 200);
 	return self;
 };

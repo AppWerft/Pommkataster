@@ -4,7 +4,6 @@ module.exports = function(mapview, baum, mylocation) {
 	Ti.Geolocation.getCurrentPosition(function(e) {
 		if (e.success) {
 			var position = [parseFloat(e.coords.latitude), parseFloat(e.coords.longitude)];
-			console.log(position);
 			mapview.activepin = Map.createAnnotation({
 				latitude : position[0],
 				draggable : true,

@@ -70,12 +70,15 @@ module.exports = function(parent, baum) {
 	container.add(picker);
 
 	var textinputs = {
+		flurstueck : {
+			label : "Flurstück"
+		},
 		baumplakettennummer : {
 			label : "Baumplakettennummer",
 			keyboardtype : Ti.UI.KEYBOARD_DECIMAL_PAD
 		},
-		baumalter : {
-			label : 'Alter des Baumes',
+		pflanzjahr : {
+			label : 'Pflanzjahr des Baumes',
 			keyboardtype : Ti.UI.KEYBOARD_DECIMAL_PAD
 		},
 		arbeitstitel : {

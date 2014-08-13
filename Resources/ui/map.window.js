@@ -1,14 +1,24 @@
 var Map = require('ti.map');
 
 module.exports = function() {
-	var baum = {
-		sorte : ''
-	};
 	var self = Ti.UI.createWindow({
 		backgroundColor : 'white',
 		fullscreen : true,
+		tree : {},
 		title : 'Streuobst-Karte #' + Ti.App.Properties.getString('pid', '')
 	});
+	self.getAllTrees = function() {
+		Ti.App.Apiomat.getAllTrees(null, function(_trees) {
+			var annotations = [];
+			for (var id in _trees) {
+				annotations.push(require('ui/annotation.widget')(_trees[id]));
+			}
+			self.mapview.removeAllAnnotations();
+			self.mapview.addAnnotations(annotations);
+		});
+	};
+
+	/* button for creating new tree */
 	self.popupbutton = Ti.UI.createButton({
 		width : 26,
 		height : 30,
@@ -17,15 +27,14 @@ module.exports = function() {
 	self.leftNavButton = self.popupbutton;
 
 	self.popupbutton.addEventListener('click', function() {
-		self.mapview.popup = require('ui/entry.window')(self, baum);
+		self.mapview.popup = require('ui/entry.window')(self);
 		self.leftNavButton = null;
 		self.add(self.mapview.popup);
 		self.mapview.popup.animate({
 			left : 0
 		});
-		self.mapview.activepin = require('ui/activeannotation.widget')(self.mapview, baum, true);
+		self.mapview.activepin = require('ui/newpin.widget')(self.mapview, true);
 	});
-
 	self.mapview = Map.createView({
 		mapType : Map.HYBRID_TYPE,
 		popup : null,
@@ -57,47 +66,47 @@ module.exports = function() {
 		massstab.setText(' 1 : ' + (mapwidth / SCREENWIDTH_PAD).toFixed(1) + ' Tausend ');
 
 	});
-	setTimeout(function() {
-		self.add(self.mapview);
-		self.add(massstab);
-		Ti.App.Apiomat.getAllTrees(null, function(_trees) {
-			var annotations = [];
-			for (var id in _trees) {
-				annotations.push(require('ui/annotation.widget')(_trees[id]));
-			}
-			self.mapview.addAnnotations(annotations);
-		});
-		self.mapview.addEventListener('click', function(_e) {
-			console.log('Info: clicksource='+_e.clicksource);
-			if (!self.mapview.popup && _e.annotation && _e.clicksource == 'leftButton') {
-				baum = _e.annotation.itemId;
-				self.mapview.popup = require('ui/entry.window')(self, baum);
-				self.leftNavButton = null;
-				self.add(self.mapview.popup);
-				Ti.App.addEventListener('app:tree', function(_payload) {
-					if (_payload.itemId)
-						_e.annotation.itemId = _payload.itemId;
-					_payload.sorte && _e.annotation.setTitle(_payload.sorte);
 
-					_payload.arbeitstitel && _e.annotation.setSubtitle(_payload.arbeitstitel);
-				});
-				self.mapview.popup.animate({
-					left : 0
-				});
-				var logo = Ti.UI.createImageView({
-					top : 0,
-					right : 0,
-					width : 100,
-					height : 120,
-					image : 'assets/logo.png',
-					opacity : 0.6,
-					touchEnabled : false
-				});
-				self.mapview.add(logo);
-			} else {
-				console.log('Warning: map always actives');
-			}
-		});
-	}, 200);
+	self.add(self.mapview);
+	self.add(massstab);
+	var logo = Ti.UI.createImageView({
+		top : 0,
+		right : 0,
+		width : 200,
+		height : 200,
+		image : 'assets/logo.png',
+		opacity : 0.1,
+		touchEnabled : false
+	});
+	logo.animate({
+		opacity : 0.6,
+		duration : 2000
+	});
+	self.mapview.add(logo);
+
+	self.mapview.addEventListener('click', function(_e) {
+		console.log('Info: clicksource=' + _e.clicksource);
+		if (!self.mapview.popup && _e.annotation && _e.clicksource == 'leftButton') {
+			self.tree = _e.annotation.itemId;
+			self.mapview.popup = require('ui/entry.window')(self);
+			self.leftNavButton = null;
+			self.add(self.mapview.popup);
+			require('ui/activepin.widget').activateAnnotation(self.mapview, _e.annotation);
+			Ti.App.addEventListener('app:tree', function(_payload) {
+				if (_payload.itemId)
+					self.mapview.activepin.itemId = _payload.itemId;
+				return;
+				_payload.sorte && self.mapview.activepin.setTitle(_payload.sorte);
+				_payload.arbeitstitel && self.mapview.activepin.setSubtitle(_payload.arbeitstitel);
+			});
+			self.mapview.popup.animate({
+				left : 0
+			});
+
+		} else {
+			console.log('Warning: map always actives');
+		}
+	});
+	self.getAllTrees();
 	return self;
 };

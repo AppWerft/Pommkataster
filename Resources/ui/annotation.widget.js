@@ -8,7 +8,6 @@ module.exports = function(_pin) {
 		itemId : _pin,
 		leftButton : 'assets/edit.png',
 		subtitle : '#' + _pin.baumplakettennummer,
-		//pincolor : Map.ANNOTATION_GREEN
 		image : '/assets/tree.png'
 	});
 	return self;

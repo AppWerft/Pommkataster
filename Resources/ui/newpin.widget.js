@@ -1,18 +1,10 @@
 var Map = require('ti.map');
-module.exports = function(mapview, baum, mylocation) {
+module.exports = function(mapview) {
 	Ti.Geolocation.purpose = 'Apfelbaumstandort bestimmen';
 	Ti.Geolocation.getCurrentPosition(function(e) {
 		if (e.success) {
 			var position = [parseFloat(e.coords.latitude), parseFloat(e.coords.longitude)];
-			mapview.activepin = Map.createAnnotation({
-				latitude : position[0],
-				draggable : true,
-				longitude : position[1],
-				title : 'unbekannte Sorte',
-				subtitle : '#',
-				pincolor : Map.ANNOTATION_GREEN
-				//	image : '/assets/tree.png',
-			});
+			mapview.activepin = require('ui/activepin').createactiveAnnotation(self.mapview_e.annotation);
 			if (baum) {
 				baum.latitude = position[0];
 				baum.longitude = position[1];

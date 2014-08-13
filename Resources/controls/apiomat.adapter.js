@@ -16,6 +16,7 @@ var ApiomatAdapter = function() {
 	var callbacks = arguments[0] || {};
 	this.userid = Ti.Utils.md5HexDigest(Ti.Platform.getMacaddress()).substring(0, 7);
 	this.user = {};
+	this.trees = [];
 	// test if online:
 	var xhr = Ti.Network.createHTTPClient({
 		onload : callbacks.ononline,
@@ -60,9 +61,9 @@ ApiomatAdapter.prototype.loginUser = function() {
 };
 
 ApiomatAdapter.prototype.saveBaum = function(baum) {
-	var Baum = (baum.id) ? this.trees[baum.id] : new Apiomat.Baum();
+	var Baum = new Apiomat.Baum();
+	console.log(this.trees);
 	console.log('~~~~~~~~~~~~~~~');
-	console.log(baum);
 	for (var key in baum) {
 		switch (key) {
 		case 'sorte':
@@ -71,7 +72,7 @@ ApiomatAdapter.prototype.saveBaum = function(baum) {
 		case 'pflanzjahr':
 			Baum.setPflanzjahr(baum.pflanzjahr);
 			break;
-			case 'flurstueck':
+		case 'flurstueck':
 			Baum.setFlurstueck(baum.flurstueck);
 			break;
 		case 'baumumfang':
@@ -91,12 +92,19 @@ ApiomatAdapter.prototype.saveBaum = function(baum) {
 			break;
 		case 'baumplakettennummer':
 			Baum.setBaumplakettennummer(baum.baumplakettennummer);
+			break;
+		case 'id':
+			this.getAllTrees();
+			Baum.data.id = baum.id;
+			break;
 		}
 	}
 	Baum.setProjektnummer(Ti.App.Properties.getString('pid'));
+	
 	Baum.save({
-		onOk : function() {
+		onOk : function(e) {
 			console.log('Info: new position  successful saved ');
+
 		},
 		onError : function() {
 			console.log('Error: cannot save new position  ' + E);
@@ -112,7 +120,6 @@ ApiomatAdapter.prototype.getGeoJSON = function(_Trees) {
 		"type" : "FeatureCollection",
 		"features" : []
 	};
-	
 	for (var id in _Trees) {
 		var tree = _Trees[id];
 		geojson.features.push({
@@ -152,6 +159,7 @@ ApiomatAdapter.prototype.getAllTrees = function(_options, _callback) {
 		onOk : function(_treelist) {
 			that.trees = _treelist;
 			var Trees = {};
+			console.log(_treelist.length + ' TREEs');
 			for (var i = 0; i < _treelist.length; i++) {
 				try {
 					var id = _treelist[i].getID();
@@ -173,27 +181,7 @@ ApiomatAdapter.prototype.getAllTrees = function(_options, _callback) {
 
 			}
 			that.getGeoJSON(Trees);
-			_callback(Trees);
-		}
-	});
-
-};
-
-ApiomatAdapter.prototype.saveTree = function(_args, _callbacks) {
-	var args = arguments[0] || {}, callbacks = arguments[1] || {}, that = this;
-	var myNewTree = new Apiomat.Baum();
-	myNewTree.setPositionLatitude(args.latitude);
-	// from getPosition
-	myNewTree.setPositionLongitude(args.longitude);
-	myNewTree.save({
-		onOK : function() {
-			console.log('Info: newPhoto.save successful');
-
-			Ti.Android && Ti.UI.createNotification({
-				message : 'Photo erhalten.'
-			}).show();
-		},
-		onError : function() {
+			_callback && _callback(Trees);
 		}
 	});
 

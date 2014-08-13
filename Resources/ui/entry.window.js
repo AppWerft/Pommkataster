@@ -1,4 +1,4 @@
-module.exports = function(parent, baum) {
+module.exports = function(parent) {
 	var self = Ti.UI.createView({
 		backgroundColor : '#ccffcc',
 		width : 220,
@@ -45,7 +45,7 @@ module.exports = function(parent, baum) {
 		data.push(Ti.UI.createPickerRow({
 			title : pommes[i]
 		}));
-		if (baum.sorte && pommes[i] == baum.sorte)
+		if (parent.tree.sorte && pommes[i] == parent.tree.sorte)
 			index = i;
 	}
 	var picker = Ti.UI.createPicker({
@@ -58,11 +58,11 @@ module.exports = function(parent, baum) {
 	});
 	picker.add(data);
 	picker.selectionIndicator = true;
-	if (baum.sorte) {
+	if (parent.tree.sorte) {
 		picker.setSelectedRow(0, index);
 	}
 	picker.addEventListener('change', function(_e) {
-		baum.sorte = _e.selectedValue[0];
+		parent.tree.sorte = _e.selectedValue[0];
 		Ti.App.fireEvent('app:tree', {
 			sorte : _e.selectedValue[0]
 		});
@@ -73,7 +73,7 @@ module.exports = function(parent, baum) {
 		flurstueck : {
 			label : "Flurstück"
 		},
-		baumplakettennummer : {
+		plakettennummer : {
 			label : "Baumplakettennummer",
 			keyboardtype : Ti.UI.KEYBOARD_DECIMAL_PAD
 		},
@@ -100,7 +100,7 @@ module.exports = function(parent, baum) {
 		}
 	};
 	for (var key in textinputs) {
-		textinputs[key].view = new (require('ui/textfield.widget'))(baum, {
+		textinputs[key].view = new (require('ui/textfield.widget'))(parent.tree, {
 			key : key,
 			label : textinputs[key].label,
 		});
@@ -111,36 +111,30 @@ module.exports = function(parent, baum) {
 		self.animate({
 			left : -300
 		}, function() {
-			if (parent.mapview.activepin) {
-				parent.mapview.removeAnnotation(parent.mapview.activepin);
-				parent.mapview.popup = null;
-			}
+			require('ui/activepin.widget').deactivateAnnotation(parent.mapview, true);
 			parent.mapview.popup = null;
 			parent.remove(self);
+			parent.tree = null;
 			self = null;
 		});
 	});
 	self.savebutton.addEventListener('click', function() {
 		// save to cloud:
-		Ti.App.Apiomat.saveBaum(baum);
+		Ti.App.Apiomat.saveBaum(parent.tree);
 		// save to map:
-		Ti.App.fireEvent('app:tree', {
-			itemId : baum
-		});
+		/*Ti.App.fireEvent('app:tree', {
+		itemId : parent.tree
+		});*/
 		// restore button:
+		if (!parent.tree)
+			parent.getAllTrees();
 		parent.leftNavButton = parent.popupbutton;
+		require('ui/activepin.widget').deactivateAnnotation(parent.mapview, false);
 		// hiding of panel
 		self.animate({
 			left : -300,
 			duration : 700
 		}, function() {
-			if (parent.mapview.activepin) {
-				parent.mapview.deselectAnnotation(parent.mapview.activepin);
-				parent.mapview.removeAnnotation(parent.mapview.activepin);
-				//	self.mapview.setImage('/assets/tree.png');
-				parent.mapview.activepin.setDraggable(false);
-				parent.mapview.addAnnotation(parent.mapview.activepin);
-			}
 			parent.remove(self);
 			parent.mapview.popup = null;
 			self = null;

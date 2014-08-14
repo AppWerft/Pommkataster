@@ -1,4 +1,5 @@
 var Map = require('ti.map');
+
 var Apiomat = require('controls/apiomat.adapter')();
 
 module.exports = function() {

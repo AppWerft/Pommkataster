@@ -1,4 +1,4 @@
-module.exports = function(parent) {
+module.exports = function(parent, Apiomat) {
 	var self = Ti.UI.createView({
 		backgroundColor : '#ccffcc',
 		width : 220,
@@ -34,18 +34,18 @@ module.exports = function(parent) {
 	var pommesdata = require('model/pommes');
 	var pommes = [];
 	var data = [];
-
 	for (var i = 0; i < pommesdata.length; i++) {
 		pommes.push(pommesdata[i].div[0].a.title);
 	}
 	pommes.sort();
 	pommes.unshift('unbekannte Obstsorte');
-	var index = 0;
+	var index = undefined;
 	for (var i = 0; i < pommes.length; i++) {
 		data.push(Ti.UI.createPickerRow({
 			title : pommes[i]
 		}));
-		if (parent.tree.sorte && pommes[i] == parent.tree.sorte)
+		/* Getting ndx of sorte */
+		if (Apiomat.currenttree && Apiomat.currenttree.getSorte() == pommes[i])
 			index = i;
 	}
 	var picker = Ti.UI.createPicker({
@@ -58,51 +58,56 @@ module.exports = function(parent) {
 	});
 	picker.add(data);
 	picker.selectionIndicator = true;
-	if (parent.tree.sorte) {
+	if (undefined != index) {
 		picker.setSelectedRow(0, index);
 	}
 	picker.addEventListener('change', function(_e) {
-		parent.tree.sorte = _e.selectedValue[0];
 		Ti.App.fireEvent('app:tree', {
 			sorte : _e.selectedValue[0]
 		});
+		Apiomat.setPropertyOfCurrentTree('sorte', _e.selectedValue[0]);
 	});
 	container.add(picker);
-
 	var textinputs = {
 		flurstueck : {
-			label : "Flurstück"
+			label : "Flurstück",
+			value : Apiomat.currenttree.getFlurstueck() || ''
 		},
 		plakettennummer : {
 			label : "Baumplakettennummer",
-			keyboardtype : Ti.UI.KEYBOARD_DECIMAL_PAD
+			keyboardtype : Ti.UI.KEYBOARD_DECIMAL_PAD,
+			value : Apiomat.currenttree.getBaumplakettennummer() || ''
 		},
 		pflanzjahr : {
 			label : 'Pflanzjahr des Baumes',
-			keyboardtype : Ti.UI.KEYBOARD_DECIMAL_PAD
+			keyboardtype : Ti.UI.KEYBOARD_DECIMAL_PAD,
+			value : Apiomat.currenttree.getPflanzjahr() || ''
 		},
 		arbeitstitel : {
-			label : 'Arbeitstitel'
+			label : 'Arbeitstitel',
+			value : Apiomat.currenttree.getArbeitstitel() || ''
 		},
 		baumhoehe : {
 			label : 'Höhe des Baumes',
-			keyboardtype : Ti.UI.KEYBOARD_DECIMAL_PAD
+			keyboardtype : Ti.UI.KEYBOARD_DECIMAL_PAD,
+			value : Apiomat.currenttree.getBaumhoehe() || ''
 		},
 		baumumfang : {
 			label : 'Umfang des Baumes in 1 m Höhe',
-			keyboardtype : Ti.UI.KEYBOARD_DECIMAL_PAD
+			keyboardtype : Ti.UI.KEYBOARD_DECIMAL_PAD,
+			value : Apiomat.currenttree.getBaumumfang() || ''
 		},
-		flurstueck : {
-			label : 'Flurstück'
-		},
+
 		pflegezustand : {
-			label : 'Pflegezustand'
+			label : 'Pflegezustand',
+			value : Apiomat.currenttree.getPflegezustand() || ''
 		}
 	};
 	for (var key in textinputs) {
-		textinputs[key].view = new (require('ui/textfield.widget'))(parent.tree, {
+		textinputs[key].view = new (require('ui/textfield.widget'))(Apiomat, {
 			key : key,
 			label : textinputs[key].label,
+			value : textinputs[key].value,
 		});
 		container.add(textinputs[key].view);
 	}
@@ -120,14 +125,9 @@ module.exports = function(parent) {
 	});
 	self.savebutton.addEventListener('click', function() {
 		// save to cloud:
-		Ti.App.Apiomat.saveBaum(parent.tree);
-		// save to map:
-		/*Ti.App.fireEvent('app:tree', {
-		itemId : parent.tree
-		});*/
+		Apiomat.saveCurrentTree();
 		// restore button:
-		if (!parent.tree)
-			parent.getAllTrees();
+		parent.getAllTrees();
 		parent.leftNavButton = parent.popupbutton;
 		require('ui/activepin.widget').deactivateAnnotation(parent.mapview, false);
 		// hiding of panel

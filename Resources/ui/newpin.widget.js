@@ -1,19 +1,10 @@
 var Map = require('ti.map');
-module.exports = function(mapview) {
+module.exports = function(mapview,Apiomat) {
 	Ti.Geolocation.purpose = 'Apfelbaumstandort bestimmen';
 	Ti.Geolocation.getCurrentPosition(function(e) {
 		if (e.success) {
 			var position = [parseFloat(e.coords.latitude), parseFloat(e.coords.longitude)];
-			mapview.activepin = require('ui/activepin').createactiveAnnotation(self.mapview_e.annotation);
-			if (baum) {
-				baum.latitude = position[0];
-				baum.longitude = position[1];
-			}
-			mapview.activepin.addEventListener('pinchangedragstate', function(_e) {
-				console.log('Info: dragend of active pin');
-				baum.latitude = parseFloat(_e.annotation.latitude);
-				baum.longitude = parseFloat(_e.annotation.longitude);
-			});
+			require('ui/activepin.widget').createactiveAnnotation(mapview,e.coords.latitude,e.coords.longitude);
 			mapview.setLocation({
 				latitude : position[0],
 				longitude : position[1],
@@ -21,6 +12,10 @@ module.exports = function(mapview) {
 				longitudeDelta : 0.002,
 				animate : true
 			});
+			Apiomat.setCurrentTree();
+			Apiomat.setPropertyOfCurrentTree('latitude',position[0]);
+			Apiomat.setPropertyOfCurrentTree('longitude',position[1]);
+			
 			mapview.addAnnotation(mapview.activepin);
 			Ti.App.addEventListener('app:tree', function(_e) {
 				_e.sorte && mapview.activepin.setTitle(_e.sorte);

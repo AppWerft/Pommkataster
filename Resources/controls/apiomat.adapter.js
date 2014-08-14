@@ -13,178 +13,187 @@ var saveCB = {
 // Constructor: ///////////////////////
 ///////////////////////////////////////
 var ApiomatAdapter = function() {
-	var callbacks = arguments[0] || {};
-	this.userid = Ti.Utils.md5HexDigest(Ti.Platform.getMacaddress()).substring(0, 7);
-	this.user = {};
-	this.trees = [];
-	// test if online:
-	var xhr = Ti.Network.createHTTPClient({
-		onload : callbacks.ononline,
-		onerror : callbacks.onoffline
-	});
-	xhr.open('HEAD', 'https://apiomat.org/yambas/rest');
-	xhr.send();
-	return this;
+	// factory pattern:
+	if (!(this instanceof ApiomatAdapter)) {
+		return new ApiomatAdapter();
+	}
+	return this.loginUser();
+
 };
 
-ApiomatAdapter.prototype.loginUser = function() {
-	var args = arguments[0] || {}, callbacks = arguments[1] || {}, that = this;
-	var uid = Ti.Utils.md5HexDigest(Ti.Platform.getMacaddress());
-	var that = this;
-	/*Apiomat.Datastore.setOfflineStrategy(Apiomat.AOMOfflineStrategy.USE_OFFLINE_CACHE, {
-	 onOk : function() {
-	 console.log('Offline cache gestartet');
-	 },
-	 onError : function(err) {
-	 //Error occurred
-	 }
-	 });*/
+ApiomatAdapter.prototype = {
+	loginUser : function() {
+		var args = arguments[0] || {}, callbacks = arguments[1] || {}, that = this;
+		this.currenttree = {};
+		this.treelist = [];
+		/*Apiomat.Datastore.setOfflineStrategy(Apiomat.AOMOfflineStrategy.USE_OFFLINE_CACHE, {
+		 onOk : function() {
+		 console.log('Offline cache gestartet');
+		 },
+		 onError : function(err) {
+		 //Error occurred
+		 }
+		 });*/
 
-	this.user = new Apiomat.Pomologe();
-	this.user.setUserName(uid);
-	this.user.setPassword('mylittlesecret');
+		this.user = new Apiomat.Pomologe();
+		this.user.setUserName(Ti.Utils.md5HexDigest(Ti.Platform.getMacaddress()));
+		this.user.setPassword('mylittlesecret');
 
-	this.user.loadMe({
-		onOk : function() {
-			console.log('Info: login into apiomat OK');
-			callbacks.onOk && callbacks.onOk();
-		},
-		onError : function(error) {
-			console.log('Warning: ' + error);
-			if (error.statusCode === Apiomat.Status.UNAUTHORIZED) {
-				that.user.save(saveCB);
-			} else
-				callbacks.onoffline();
+		this.user.loadMe({
+			onOk : function() {
+				console.log('Info: login into apiomat OK');
+				callbacks.onOk && callbacks.onOk();
+			},
+			onError : function(error) {
+				console.log('Warning: ' + error);
+				if (error.statusCode === Apiomat.Status.UNAUTHORIZED) {
+					that.user.save(saveCB);
+				} else
+					callbacks.onoffline();
+			}
+		});
+		return this;
+	},
+
+	setCurrentTree : function(_id) {
+		console.log('Info: try to set currenttree with ID=' + _id);
+		if (_id) {
+			for (var i = 0; i < this.treelist.length; i++) {
+				if (this.treelist[i].getID() == _id) {
+					console.log('Info: currenttree has index ' + i);
+					this.currenttree = this.treelist[i];
+					break;
+				}
+			}
+		} else {
+			this.currenttree = new Apiomat.Baum();
 		}
-	});
-	return this;
-};
-
-ApiomatAdapter.prototype.saveBaum = function(baum) {
-	var Baum = new Apiomat.Baum();
-	console.log(this.trees);
-	console.log('~~~~~~~~~~~~~~~');
-	for (var key in baum) {
-		switch (key) {
+		this.currenttree.setProjektnummer(Ti.App.Properties.getString('pid'));
+	},
+	setPropertyOfCurrentTree : function(_key, _value) {
+		console.log('Info: set ' + _key + ' to ' + _value);
+		switch (_key) {
 		case 'sorte':
-			Baum.setSorte(baum.sorte);
+			this.currenttree.setSorte(_value);
 			break;
 		case 'pflanzjahr':
-			Baum.setPflanzjahr(baum.pflanzjahr);
+			this.currenttree.setPflanzjahr(_value);
 			break;
 		case 'flurstueck':
-			Baum.setFlurstueck(baum.flurstueck);
+			this.currenttree.setFlurstueck(_value);
 			break;
 		case 'baumumfang':
-			Baum.setBaumumfang(baum.baumumfang);
+			this.currenttree.setBaumumfang(_value);
 			break;
 		case 'baumhoehe':
-			Baum.setBaumumfang(baum.baumhoehe);
+			this.currenttree.setBaumhoehe(_value);
 			break;
 		case 'arbeitstitel':
-			Baum.setArbeitstitel(baum.arbeitstitel);
+			this.currenttree.setArbeitstitel(_value);
 			break;
 		case 'latitude':
-			Baum.setPositionLatitude(baum.latitude);
+			this.currenttree.setPositionLatitude(_value);
 			break;
 		case 'longitude':
-			Baum.setPositionLongitude(baum.longitude);
+			this.currenttree.setPositionLongitude(_value);
 			break;
 		case 'baumplakettennummer':
-			Baum.setBaumplakettennummer(baum.baumplakettennummer);
-			break;
-		case 'id':
-			this.getAllTrees();
-			Baum.data.id = baum.id;
+			this.currenttree.setBaumplakettennummer(_value);
 			break;
 		}
-	}
-	Baum.setProjektnummer(Ti.App.Properties.getString('pid'));
-	
-	Baum.save({
-		onOk : function(e) {
-			console.log('Info: new position  successful saved ');
-
-		},
-		onError : function() {
-			console.log('Error: cannot save new position  ' + E);
-
+	},
+	getGeoJSON : function(_treelist) {
+		if (!Ti.App.Properties.getString('pid'))
+			return;
+		var geojson = {
+			"type" : "FeatureCollection",
+			"features" : []
+		};
+		for (var i = 0; i < _treelist.length; i++) {
+			var tree = _treelist[i];
+			geojson.features.push({
+				type : "Feature",
+				properties : {
+					sorte : tree.sorte
+				},
+				geometry : {
+					type : "Point",
+					coordinates : [tree.latitude, tree.longitude]
+				}
+			});
 		}
-	});
-};
-
-ApiomatAdapter.prototype.getGeoJSON = function(_Trees) {
-	if (!Ti.App.Properties.getString('pid'))
-		return;
-	var geojson = {
-		"type" : "FeatureCollection",
-		"features" : []
-	};
-	for (var id in _Trees) {
-		var tree = _Trees[id];
-		geojson.features.push({
-			type : "Feature",
-			properties : {
-				sorte : tree.sorte
+		var pid = Ti.App.Properties.getString('pid');
+		var file = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, pid + '_geojson.json');
+		file.write(JSON.stringify(geojson));
+		var xhr = Ti.Network.createHTTPClient({
+			onload : function() {
+				var shapefile = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, 'baumkataster_' + pid + '_shape.zip');
+				shapefile.write(this.responseData);
 			},
-			geometry : {
-				type : "Point",
-				coordinates : [tree.latitude, tree.longitude]
+			onerror : function() {
+				console.log(this.error);
+			}
+		});
+		xhr.open('POST', 'http://ogre.adc4gis.com/convertJson');
+		xhr.send({
+			json : JSON.stringify(geojson),
+			outputName : 'baumkataster_' + pid + '_'
+		});
+	},
+	saveCurrentTree : function() {
+
+		this.currenttree.save({
+			onOk : function(e) {
+				Ti.App.fireEvent('app:message', {
+					message : 'Baumdaten erfolgreich gespeichert. '
+				});
+				console.log('Info: new position of tree successful saved –––––––––––');
+			},
+			onError : function(E) {
+				alert('Konnte Baumdaten nicht speichern');
+				console.log(E);
+			}
+		});
+	},
+	getAllTrees : function(_options, _callback) {
+		var query = "projektnummer==\"" + Ti.App.Properties.getString('pid') + "\"";
+		var that = this;
+		Ti.App.fireEvent('app:message', {
+			message : 'Lade Baumdaten aus dem Netz …'
+		});
+		Apiomat.Baum.getBaums(query, {
+			onOk : function(_treelist) {
+				Ti.App.fireEvent('app:message', {
+					message : 'Baumdaten erhalten: ' + _treelist.length
+				});
+				that.treelist = _treelist;
+				var treelist = [];
+				for (var i = 0; i < _treelist.length; i++) {
+					try {
+						var id = _treelist[i].getID();
+						treelist.push({
+							id : id,
+							latitude : _treelist[i].getPositionLatitude(),
+							longitude : _treelist[i].getPositionLongitude(),
+							sorte : _treelist[i].getSorte(),
+							baumplakettennummer : _treelist[i].getBaumplakettennummer() || '',
+							baumhoehe : _treelist[i].getBaumhoehe() || '',
+							baumumfang : _treelist[i].getBaumumfang() || '',
+							arbeitstitel : _treelist[i].getArbeitstitel() || '',
+							flurstueck : _treelist[i].getFlurstueck() || '',
+							pflegezustand : _treelist[i].getPflegezustand() || '',
+							pflanzjahr : _treelist[i].getPflanzjahr() || '',
+						});
+					} catch(E) {
+						console.log(E);
+					}
+
+				}
+				that.getGeoJSON(treelist);
+				_callback && _callback(treelist);
 			}
 		});
 	}
-	var pid = Ti.App.Properties.getString('pid');
-	var file = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, pid + '_geojson.json');
-	file.write(JSON.stringify(geojson));
-	var xhr = Ti.Network.createHTTPClient({
-		onload : function() {
-			var shapefile = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, 'baumkataster_' + pid + '_shape.zip');
-			shapefile.write(this.responseData);
-		},
-		onerror : function() {
-			console.log(this.error);
-		}
-	});
-	xhr.open('POST', 'http://ogre.adc4gis.com/convertJson');
-	xhr.send({
-		json : JSON.stringify(geojson),
-		outputName : 'baumkataster_' + pid + '_'
-	});
-};
-
-ApiomatAdapter.prototype.getAllTrees = function(_options, _callback) {
-	var query = "projektnummer==\"" + Ti.App.Properties.getString('pid') + "\"";
-	var that = this;
-	Apiomat.Baum.getBaums(query, {
-		onOk : function(_treelist) {
-			that.trees = _treelist;
-			var Trees = {};
-			console.log(_treelist.length + ' TREEs');
-			for (var i = 0; i < _treelist.length; i++) {
-				try {
-					var id = _treelist[i].getID();
-					Trees[id] = {
-						id : id,
-						latitude : _treelist[i].getPositionLatitude(),
-						longitude : _treelist[i].getPositionLongitude(),
-						sorte : _treelist[i].getSorte(),
-						baumplakettennummer : _treelist[i].getBaumplakettennummer() || '',
-						baumhoehe : _treelist[i].getBaumhoehe() || '',
-						baumumfang : _treelist[i].getBaumumfang() || '',
-						arbeitstitel : _treelist[i].getArbeitstitel() || '',
-						flurstueck : _treelist[i].getFlurstueck() || '',
-						pflegezustand : _treelist[i].getPflegezustand() || '',
-					};
-				} catch(E) {
-					console.log(E);
-				}
-
-			}
-			that.getGeoJSON(Trees);
-			_callback && _callback(Trees);
-		}
-	});
-
 };
 
 module.exports = ApiomatAdapter;

@@ -1,9 +1,12 @@
 var Map = require('ti.map');
+var Apiomat = require('controls/apiomat.adapter')();
 
+/* make an exist annotation to active annotation */
 exports.activateAnnotation = function(_mapview, _a) {
 	_mapview.removeAnnotation(_a);
 	_mapview.activepin = Map.createAnnotation({
 		latitude : _a.latitude,
+		ref : _a.ref,
 		draggable : true,
 		longitude : _a.longitude,
 		pincolor : Map.ANNOTATION_RED,
@@ -13,8 +16,9 @@ exports.activateAnnotation = function(_mapview, _a) {
 	});
 	_a = null;
 	_mapview.addAnnotation(_mapview.activepin);
+	
 };
-
+/* create a new, active annotation */
 exports.createactiveAnnotation = function(_mapview, _lat, _lng) {
 	_mapview.activepin = Map.createAnnotation({
 		latitude : _lat,
@@ -25,6 +29,13 @@ exports.createactiveAnnotation = function(_mapview, _lat, _lng) {
 		subtitle : ''
 	});
 	_mapview.addAnnotation(_mapview.activepin);
+	_mapview.activepin.addEventListener('pinchangedragstate', function(_a) {
+		if (_a.newState == Map.ANNOTATION_DRAG_STATE_END) {
+			Apiomat.setPropertyOfCurrentTree('latitude', _a.annotation.latitude);
+			Apiomat.setPropertyOfCurrentTree('longitude', _a.annotation.longitude);
+		}
+	});
+	return _mapview.activepin;
 };
 
 exports.deactivateAnnotation = function(_mapview, _restore) {

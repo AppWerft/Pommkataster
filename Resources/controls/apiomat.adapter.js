@@ -2,12 +2,7 @@ var Apiomat = require('vendor/apiomat');
 var moment = require('vendor/moment');
 moment.lang('de');
 
-var saveCB = {
-	onOk : function() {
-	},
-	onError : function(error) {
-	}
-};
+
 
 ///////////////////////////////////////
 // Constructor: ///////////////////////
@@ -47,7 +42,12 @@ ApiomatAdapter.prototype = {
 			onError : function(error) {
 				console.log('Warning: ' + error);
 				if (error.statusCode === Apiomat.Status.UNAUTHORIZED) {
-					that.user.save(saveCB);
+					that.user.save({
+	onOk : function() {
+	},
+	onError : function(error) {
+	}
+});
 				} else
 					callbacks.onoffline();
 			}

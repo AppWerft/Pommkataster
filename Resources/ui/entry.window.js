@@ -45,7 +45,7 @@ module.exports = function(parent, Apiomat) {
 			title : pommes[i]
 		}));
 		/* Getting ndx of sorte */
-		if (Apiomat.currenttree && Apiomat.currenttree.getSorte() == pommes[i])
+		if (Apiomat.currenttree.getSorte && Apiomat.currenttree.getSorte() == pommes[i])
 			index = i;
 	}
 	var picker = Ti.UI.createPicker({

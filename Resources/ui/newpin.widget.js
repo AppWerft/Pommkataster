@@ -12,7 +12,7 @@ module.exports = function(mapview,Apiomat) {
 				longitudeDelta : 0.002,
 				animate : true
 			});
-			Apiomat.setCurrentTree();
+			
 			Apiomat.setPropertyOfCurrentTree('latitude',position[0]);
 			Apiomat.setPropertyOfCurrentTree('longitude',position[1]);
 			

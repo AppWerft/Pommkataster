@@ -2,14 +2,13 @@ var Apiomat = require('vendor/apiomat');
 var moment = require('vendor/moment');
 moment.lang('de');
 
-
-
 ///////////////////////////////////////
 // Constructor: ///////////////////////
 ///////////////////////////////////////
 var ApiomatAdapter = function() {
 	// factory pattern:
 	if (!(this instanceof ApiomatAdapter)) {
+		console.log('Info: Factory ~~~~~~~~~~~~~~~~');
 		return new ApiomatAdapter();
 	}
 	return this.loginUser();
@@ -43,11 +42,11 @@ ApiomatAdapter.prototype = {
 				console.log('Warning: ' + error);
 				if (error.statusCode === Apiomat.Status.UNAUTHORIZED) {
 					that.user.save({
-	onOk : function() {
-	},
-	onError : function(error) {
-	}
-});
+						onOk : function() {
+						},
+						onError : function(error) {
+						}
+					});
 				} else
 					callbacks.onoffline();
 			}
@@ -141,12 +140,13 @@ ApiomatAdapter.prototype = {
 		});
 	},
 	saveCurrentTree : function() {
-
+		var that = this;
 		this.currenttree.save({
 			onOk : function(e) {
 				Ti.App.fireEvent('app:message', {
 					message : 'Baumdaten erfolgreich gespeichert. '
 				});
+				that.currenttree = {};
 				console.log('Info: new position of tree successful saved –––––––––––');
 			},
 			onError : function(E) {

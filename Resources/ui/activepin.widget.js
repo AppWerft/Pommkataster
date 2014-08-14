@@ -1,5 +1,4 @@
 var Map = require('ti.map');
-var Apiomat = require('controls/apiomat.adapter')();
 
 /* make an exist annotation to active annotation */
 exports.activateAnnotation = function(_mapview, _a) {
@@ -16,16 +15,19 @@ exports.activateAnnotation = function(_mapview, _a) {
 	});
 	_a = null;
 	_mapview.addAnnotation(_mapview.activepin);
-	
+
 };
 /* create a new, active annotation */
 exports.createactiveAnnotation = function(_mapview, _lat, _lng) {
+	var Apiomat = require('controls/apiomat.adapter');
+	console.log(Apiomat);
+	/* obwohl der factory Zweig nicht durchlaufen wird, ist Apiomat.currenttree leer */
 	_mapview.activepin = Map.createAnnotation({
 		latitude : _lat,
 		draggable : true,
 		longitude : _lng,
 		pincolor : Map.ANNOTATION_RED,
-		title : '',
+		title : 'unbekannte Obstsorte',
 		subtitle : ''
 	});
 	_mapview.addAnnotation(_mapview.activepin);

@@ -35,6 +35,7 @@ module.exports = function() {
 	self.rightNavButtons = [self.menubutton];
 	
 	self.popupbutton.addEventListener('click', function() {
+		Apiomat.setCurrentTree();
 		self.mapview.popup = require('ui/entry.window')(self,Apiomat);
 		self.leftNavButton = null;
 		self.add(self.mapview.popup);

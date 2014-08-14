@@ -1,8 +1,8 @@
 var Map = require('ti.map');
 
-var Apiomat = require('controls/apiomat.adapter')();
 
-module.exports = function() {
+
+module.exports = function(Apiomat) {
 	var self = Ti.UI.createWindow({	
 		backgroundColor : 'white',
 		fullscreen : true,

@@ -18,9 +18,9 @@ exports.activateAnnotation = function(_mapview, _a) {
 
 };
 /* create a new, active annotation */
-exports.createactiveAnnotation = function(_mapview, _lat, _lng) {
-	var Apiomat = require('controls/apiomat.adapter');
-	console.log(Apiomat);
+exports.createactiveAnnotation = function(_mapview, Apiomat,_lat, _lng) {
+	
+	
 	/* obwohl der factory Zweig nicht durchlaufen wird, ist Apiomat.currenttree leer */
 	_mapview.activepin = Map.createAnnotation({
 		latitude : _lat,

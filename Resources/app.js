@@ -19,6 +19,6 @@
 			Ti.App.Properties.setString('pid', e.text);
 		});
 	}
-	Apiomat.loginUser();
+	
 	require('ui/main')(Apiomat);
 }();

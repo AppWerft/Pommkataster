@@ -4,7 +4,7 @@ module.exports = function(mapview,Apiomat) {
 	Ti.Geolocation.getCurrentPosition(function(e) {
 		if (e.success) {
 			var position = [parseFloat(e.coords.latitude), parseFloat(e.coords.longitude)];
-			require('ui/activepin.widget').createactiveAnnotation(mapview,e.coords.latitude,e.coords.longitude);
+			require('ui/activepin.widget').createactiveAnnotation(mapview,Apiomat,e.coords.latitude,e.coords.longitude);
 			mapview.setLocation({
 				latitude : position[0],
 				longitude : position[1],
